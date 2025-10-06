@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  vanlu-agent:
+    build: .
+    container_name: vanlu-luciano-agent
+    ports:
+      - '2024:2024'
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - LANGSMITH_API_KEY=${LANGSMITH_API_KEY}
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - vanlu-logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - vanlu-network
+
+networks:
+  vanlu-network:
+    driver: bridge
+
+volumes:
+  vanlu-logs:
+    driver: local

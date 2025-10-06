@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  vanlu-agent:
+    image: vanlu-agent:latest
+    container_name: vanlu-luciano-agent
+    ports:
+      - "2024:2024"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - LANGSMITH_API_KEY=${LANGSMITH_API_KEY}
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - vanlu-logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - vanlu-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:2024/docs || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+
+networks:
+  vanlu-network:
+    driver: bridge
+
+volumes:
+  vanlu-logs:
+    driver: local
